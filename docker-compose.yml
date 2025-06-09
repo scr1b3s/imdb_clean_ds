@@ -1,0 +1,16 @@
+name: imdb_data
+
+services:
+  pg:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: imdb_user
+      POSTGRES_PASSWORD: senhasupersegura123
+      POSTGRES_DB: imdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - imdb_data:/var/lib/postgresql/data
+
+volumes:
+  imdb_data: {}
