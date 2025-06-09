@@ -8,5 +8,4 @@ dependencies = [
     "beautifulsoup4>=4.13.4",
     "polars>=1.30.0",
     "requests>=2.32.3",
-    "tqdm>=4.67.1",
 ]
