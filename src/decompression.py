@@ -3,12 +3,11 @@ import shutil
 from pathlib import Path
 import polars as pl
 
-IN_FOLDER = "./datasets"
-OUT_FOLDER = "./raw"
+from env import appEnv
 
 
 def decompress(in_folder, out_folder):
-    if not Path(OUT_FOLDER).exists:
+    if not Path(appEnv.OUT_DIR).exists:
         Path(out_folder).mkdir(parents=True, exist_ok=True)
     out_folder = Path(out_folder)
     in_folder = Path(in_folder)
@@ -41,4 +40,4 @@ def decompress(in_folder, out_folder):
 
 
 if __name__ == "__main__":
-    decompress(IN_FOLDER, OUT_FOLDER)
+    decompress(appEnv.IN_DIR, appEnv.OUT_DIR)

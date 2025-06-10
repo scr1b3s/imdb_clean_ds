@@ -2,8 +2,8 @@ import os
 import requests
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor
+from env import appEnv
 
-LIST_PAGE = "https://developer.imdb.com/non-commercial-datasets/"
 WHERE_SAVE = r"./datasets/downloads"
 CHUNK_SIZE = 1024 * 1024
 
@@ -43,7 +43,7 @@ def download_many(file_list, max_workers=3):
 
 
 if __name__ == "__main__":
-    download_list = extract_page_file(LIST_PAGE, WHERE_SAVE)
+    download_list = extract_page_file(appEnv.list_page, WHERE_SAVE)
 
     for entry in download_list:
         print(entry)

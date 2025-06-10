@@ -1,3 +1,5 @@
+from env import appEnv  # must import this first to load envs and appEnv variable
+
 from pathlib import Path
 import polars as pl
 import logging as log
