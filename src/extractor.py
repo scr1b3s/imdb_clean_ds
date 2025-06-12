@@ -1,11 +1,14 @@
+from env import appEnv
+
 import os
 import requests
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor
 from env import appEnv
 
-WHERE_SAVE = r"./datasets/downloads"
-CHUNK_SIZE = 1024 * 1024
+SAVE_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", appEnv.SAVE_DIR)
+)
 
 
 def extract_page_file(page: str, sv_path: str) -> list:
@@ -31,7 +34,7 @@ def download_files(url, path):
     with requests.get(url, stream=True) as r:
         r.raise_for_status()
         with open(path, "wb") as f:
-            for chunk in r.iter_content(chunk_size=CHUNK_SIZE):
+            for chunk in r.iter_content(chunk_size=appEnv.CHUNK_SIZE):
                 f.write(chunk)
 
         print(f"Downloaded: {path.split('/')[-1]}")
@@ -43,18 +46,12 @@ def download_many(file_list, max_workers=3):
 
 
 if __name__ == "__main__":
-    download_list = extract_page_file(appEnv.list_page, WHERE_SAVE)
+    download_list = extract_page_file(appEnv.LIST_PAGE, SAVE_DIR)
 
     for entry in download_list:
         print(entry)
 
-    if not os.path.exists(WHERE_SAVE):
-        os.makedirs(WHERE_SAVE)
+    if not os.path.exists(SAVE_DIR):
+        os.makedirs(SAVE_DIR)
 
     download_many(download_list)
-
-    # download_files(
-    #     where_data,
-    #     files_list,
-    #     WHERE_SAVE
-    # )
