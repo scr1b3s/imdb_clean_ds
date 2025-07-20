@@ -1,21 +1,27 @@
 import gzip
 import shutil
 from pathlib import Path
+import os
 import polars as pl
 
 from env import appEnv
 
+IN_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", appEnv.IN_DIR))
+OUT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", appEnv.OUT_DIR))
+MID_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", appEnv.MID_DIR))
 
-def decompress(in_folder, out_folder):
-    if not Path(appEnv.OUT_DIR).exists:
-        Path(out_folder).mkdir(parents=True, exist_ok=True)
-    out_folder = Path(out_folder)
-    in_folder = Path(in_folder)
 
-    for gz_file in Path(in_folder).glob("*.gz"):
+def decompress(in_dir: str, out_dir: str, mid_dir: str) -> None:
+    if not Path(out_dir).exists:
+        Path(out_dir).mkdir(parents=True, exist_ok=True)
+    mid_dir = Path(mid_dir)
+    out_dir = Path(out_dir)
+    in_dir = Path(in_dir)
+
+    for gz_file in Path(in_dir).glob("*.gz"):
         print(f"Processing {gz_file.name}...")
 
-        temp_tsv = out_folder / gz_file.stem
+        temp_tsv = mid_dir / gz_file.stem
 
         try:
             with gzip.open(gz_file, "rb") as f_in:
@@ -30,7 +36,7 @@ def decompress(in_folder, out_folder):
                 infer_schema_length=10000,
             )
 
-            pq_file = out_folder / (temp_tsv.stem + ".parquet")
+            pq_file = out_dir / (temp_tsv.stem + ".parquet")
             df.write_parquet(pq_file)
             print(f"Saved to {pq_file}")
         finally:
@@ -40,4 +46,4 @@ def decompress(in_folder, out_folder):
 
 
 if __name__ == "__main__":
-    decompress(appEnv.IN_DIR, appEnv.OUT_DIR)
+    decompress(IN_DIR, OUT_DIR, appEnv.MID_DIR)

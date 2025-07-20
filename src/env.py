@@ -2,16 +2,22 @@ import logging
 import os
 from typing import ClassVar, Union
 
-from dotenv import load_dotenv
+from environs import Env
+
+env = Env()
+env.read_env()  # Reads .env file
+
 from pydantic import BaseModel
 
 
 class AppEnv(BaseModel):
-    DATA_DIR: str
-    IN_DIR: str
-    OUT_DIR: str
-    PROCESS_DIR: str
-    LIST_PAGE: str
+    DATA_DIR: str = env.str("DATA_DIR")
+    IN_DIR: str = env.str("IN_DIR")
+    OUT_DIR: str = env.str("OUT_DIR")
+    MID_DIR: str = env.str("MID_DIR")
+    LIST_PAGE: str = env.str("LIST_PAGE")
+    SAVE_DIR: str = env.str("SAVE_DIR")
+    CHUNK_SIZE: int = env.int("CHUNK_SIZE")
 
     _instance: ClassVar[Union["AppEnv", None]] = None
 
@@ -23,7 +29,6 @@ class AppEnv(BaseModel):
 
     @staticmethod
     def _create_new_instance() -> "AppEnv":
-        load_dotenv()
         defined_envs = dict()
         non_defined_envs = []
         app_envs = [key for key in AppEnv.model_fields.keys()]
@@ -35,11 +40,8 @@ class AppEnv(BaseModel):
             else:
                 defined_envs[key] = env
         if len(non_defined_envs) != 0:
-            logging.error(
-                f"must define the following envs: {' '.join(non_defined_envs)}"
-            )
             raise Exception(
-                f"must define the following envs: {' '.join(non_defined_envs)}"
+                f"must define the following envs: {', '.join(non_defined_envs)}."
             )
         return AppEnv(**defined_envs)
 
